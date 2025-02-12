@@ -16,12 +16,12 @@ namespace Document_Workflow_System
             _realAccessControl = new RealAccessControl();
         }
 
-        public bool CanAddCollaborator(User user, List<User> collaborators, User owner, User approver)
+        public bool CanAddCollaborator(User user, List<User> collaborators, User owner, User approver, string state)
         {
             string key = $"AddCollab-{user.Username}-{owner.Username}";
             if (!_cache.ContainsKey(key))
             {
-                _cache[key] = _realAccessControl.CanAddCollaborator(user, collaborators, owner, approver);
+                _cache[key] = _realAccessControl.CanAddCollaborator(user, collaborators, owner, approver, state);
             }
             return _cache[key];
         }

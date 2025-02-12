@@ -356,7 +356,7 @@ namespace DocumentWorkflowSystem
                     {
                         Console.Write("Enter reason for pushing back: ");
                         string reason = Console.ReadLine();
-                        document.State.PushBack(document, reason, user);
+                        document.PushBack(reason, user);
                     }
                     else
                     {

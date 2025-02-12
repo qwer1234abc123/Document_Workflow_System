@@ -8,12 +8,24 @@ namespace Document_Workflow_System
 {
     public class RealAccessControl : IAccessControl
     {
-        public bool CanAddCollaborator(User user, List<User> collaborators, User owner, User approver)
+        public bool CanAddCollaborator(User user, List<User> collaborators, User owner, User approver, string state)
         {
-            if (user == owner || collaborators.Contains(user) || user == approver)
+            // Rule 1: Cannot add collaborators if document is in RejectedState
+            if (state == "RejectedState")
+            {
+                Console.WriteLine("Error: Cannot add collaborators while the document is in Rejected State.");
                 return false;
+            }
+
+            // Rule 2: User cannot be the owner, existing collaborator, or the approver
+            if (user == owner || collaborators.Contains(user) || user == approver)
+            {
+                return false;
+            }
+
             return true;
         }
+
 
         public bool CanBeApprover(User user, List<User> collaborators, User owner)
         {

@@ -17,7 +17,7 @@ namespace Document_Workflow_System
         public List<User> Collaborators { get; private set; }
         public User Approver { get; private set; }
         public DateTime CreatedDate { get; private set; }
-        public DateTime? LastEditedDate { get; private set; }
+        public DateTime? LastEditedDate { get; set; }
         private List<INotifiable> observers;
         private IConversionStrategy conversionStrategy;
         private readonly IAccessControl accessControlProxy;
@@ -46,7 +46,7 @@ namespace Document_Workflow_System
 
         public void AddCollaborator(User user)
         {
-            if (!accessControlProxy.CanAddCollaborator(user, Collaborators, Owner, Approver))
+            if (!accessControlProxy.CanAddCollaborator(user, Collaborators, Owner, Approver, State.GetType().Name)) // Pass the state
             {
                 Console.WriteLine($"Error: User '{user.Username}' cannot be added as a collaborator to this document.");
                 return; // Gracefully exit
@@ -59,16 +59,10 @@ namespace Document_Workflow_System
         }
 
 
-        public bool CanAddCollaborator(User user)
-        {
-            return accessControlProxy.CanAddCollaborator(user, Collaborators, Owner, Approver);
-        }
-
         public bool CanAccess(User user)
         {
             return accessControlProxy.CanAccessDocument(user, Owner, Collaborators, Approver, State.GetType().Name);
         }
-
 
         public void Edit(string content, User user)
         {
@@ -78,11 +72,19 @@ namespace Document_Workflow_System
             }
 
             State.Edit(this, content, user);
+            LastEditedDate = DateTime.Now; 
             NotifyObservers($"Document '{Header.GetHeader()}' was edited by {user.Username}.");
         }
 
         public void SubmitForApproval(User approver = null)
         {
+            // Ensure that rejected documents are edited before re-submission
+            if (State is RejectedState && (LastEditedDate == null || LastEditedDate < CreatedDate))
+            {
+                Console.WriteLine("Error: Document must be edited before resubmitting for approval.");
+                return;
+            }
+
             try
             {
                 State.Submit(this, approver);
@@ -92,6 +94,7 @@ namespace Document_Workflow_System
                 Console.WriteLine($"Error: {ex.Message}");
             }
         }
+
 
         public void Approve(User approver)
         {
@@ -112,7 +115,11 @@ namespace Document_Workflow_System
                 Console.WriteLine($"Approver '{approver.Username}' has been removed from the document.");
             }
 
-            NotifyObservers($"Document '{Header.GetHeader()}' was rejected by {approver.Username} with reason: {reason}.");
+        }
+
+        public void PushBack(string reason, User approver)
+        {
+            State.PushBack(this, reason, approver);
         }
 
         public void UpdateContent(string content)

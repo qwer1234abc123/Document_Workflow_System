@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Document_Workflow_System
+﻿namespace Document_Workflow_System
 {
-    public class DocumentCollection
+    public class DocumentCollection : IDocumentCollection
     {
         private readonly List<Document> documents;
 
@@ -25,5 +19,4 @@ namespace Document_Workflow_System
             return new DocumentIterator(documents, filter);
         }
     }
-
 }
