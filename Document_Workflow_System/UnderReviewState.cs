@@ -54,8 +54,6 @@ namespace Document_Workflow_System
             document.NotifyObservers($"Document '{document.Header}' was pushed back by {approver.Username} with reason: {reason}.");
         }
 
-
-
         public List<string> GetValidActions(Document document, User user)
         {
             var actions = new List<string>();

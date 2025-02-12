@@ -8,9 +8,10 @@ namespace Document_Workflow_System
 {
     public class Document : INotificationSubject
     {
-        public string Header { get; set; }
-        public string Footer { get; set; }
-        public string Content { get; private set; }
+        public IHeader Header { get; private set; }
+        public IFooter Footer { get; private set; } 
+        public IContent Content { get; private set; }
+        public IAdditionalComponent AdditionalComponent { get; private set; }
         public IDocumentState State { get; set; }
         public User Owner { get; private set; }
         public List<User> Collaborators { get; private set; }
@@ -26,6 +27,7 @@ namespace Document_Workflow_System
             Header = factory.CreateHeader();
             Footer = factory.CreateFooter();
             Content = factory.CreateContent();
+            AdditionalComponent = factory.CreateAdditionalComponent();
             Owner = owner;
             Collaborators = new List<User>();
             observers = new List<INotifiable>();
@@ -52,7 +54,7 @@ namespace Document_Workflow_System
 
             Collaborators.Add(user);
             RegisterObserver(user);
-            NotifyObservers($"User {user.Username} has been added as a collaborator to the document '{Header}'.");
+            NotifyObservers($"User {user.Username} has been added as a collaborator to the document '{Header.GetHeader()}'.");
             Console.WriteLine($"User '{user.Username}' added as a collaborator.");
         }
 
@@ -77,7 +79,7 @@ namespace Document_Workflow_System
             }
 
             State.Edit(this, content, user);
-            NotifyObservers($"Document '{Header}' was edited by {user.Username}.");
+            NotifyObservers($"Document '{Header.GetHeader()}' was edited by {user.Username}.");
         }
 
         public void SubmitForApproval(User approver = null)
@@ -95,8 +97,8 @@ namespace Document_Workflow_System
         public void Approve(User approver)
         {
             State.Approve(this, approver);
-            NotifyObservers($"Document '{Header}' was approved by {approver.Username}.");
-            approver.Notify($"You approved the document '{Header}'.");
+            NotifyObservers($"Document '{Header.GetHeader()}' was approved by {approver.Username}.");
+            approver.Notify($"You approved the document '{Header.GetHeader()}'.");
         }
 
         public void Reject(string reason, User approver)
@@ -111,13 +113,13 @@ namespace Document_Workflow_System
                 Console.WriteLine($"Approver '{approver.Username}' has been removed from the document.");
             }
 
-            NotifyObservers($"Document '{Header}' was rejected by {approver.Username} with reason: {reason}.");
+            NotifyObservers($"Document '{Header.GetHeader()}' was rejected by {approver.Username} with reason: {reason}.");
         }
 
 
         public void UpdateContent(string content)
         {
-            Content = content;
+            Content.SetContent(content);
         }
 
         public void UpdateLastEditedDate(DateTime date)
@@ -170,7 +172,7 @@ namespace Document_Workflow_System
 
         public override string ToString()
         {
-            return $"Document: {Header} | State: {State.GetType().Name} | Owner: {Owner.Username} | Created: {CreatedDate}";
+            return $"Document: {Header.GetHeader()} | State: {State.GetType().Name} | Owner: {Owner.Username} | Created: {CreatedDate}";
         }
 
     }

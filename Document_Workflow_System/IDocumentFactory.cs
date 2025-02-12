@@ -8,8 +8,9 @@ namespace Document_Workflow_System
 {
     public interface IDocumentFactory
     {
-        string CreateHeader();
-        string CreateFooter();
-        string CreateContent();
+        IHeader CreateHeader();
+        IFooter CreateFooter();
+        IContent CreateContent();
+        IAdditionalComponent CreateAdditionalComponent();
     }
 }

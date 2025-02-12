@@ -33,25 +33,16 @@ namespace DocumentWorkflowSystem
             var techReportFactory = new TechnicalReportFactory();
             var grantProposalFactory = new GrantProposalFactory();
 
-            var techReport = new Document(techReportFactory, john)
-            {
-                Header = "Technical Report: AI Research",
-                Footer = "Footer for AI Research Report"
-            };
+            var techReport = new Document(techReportFactory, john);
+
             documentCollection.AddDocument(techReport);
 
-            var grantProposal1 = new Document(grantProposalFactory, mary)
-            {
-                Header = "Grant Proposal: Green Energy Project",
-                Footer = "Footer for Green Energy Proposal"
-            };
+            var grantProposal1 = new Document(grantProposalFactory, mary);
+
             documentCollection.AddDocument(grantProposal1);
 
-            var grantProposal2 = new Document(grantProposalFactory, john)
-            {
-                Header = "Grant Proposal: Space Exploration Initiative",
-                Footer = "Footer for Space Exploration Proposal"
-            };
+            var grantProposal2 = new Document(grantProposalFactory, john);
+
             documentCollection.AddDocument(grantProposal2);
 
             // Print initialized documents
@@ -61,7 +52,7 @@ namespace DocumentWorkflowSystem
             while (iterator.HasNext())
             {
                 var doc = iterator.Next();
-                Console.WriteLine($"- {doc.Header} (Owner: {doc.Owner.Username})");
+                Console.WriteLine($"- {doc.Header.GetHeader()} (Owner: {doc.Owner.Username})");  // ✅ CORRECT
             }
         }
 
@@ -151,7 +142,7 @@ namespace DocumentWorkflowSystem
                 while (iterator.HasNext())
                 {
                     var doc = iterator.Next();
-                    userDocs.Add(doc.Header);
+                    userDocs.Add(doc.Header.GetHeader());
                 }
 
                 if (userDocs.Count > 0)
@@ -174,7 +165,7 @@ namespace DocumentWorkflowSystem
             while (iterator.HasNext())
             {
                 var doc = iterator.Next();
-                Console.WriteLine($"- {doc.Header} (Owner: {doc.Owner.Username})");
+                Console.WriteLine($"- {doc.Header.GetHeader()} (Owner: {doc.Owner.Username})");
             }
         }
 
@@ -223,15 +214,15 @@ namespace DocumentWorkflowSystem
                 var doc = iterator.Next();
                 if (doc.Owner == user)
                 {
-                    Console.WriteLine($"- {doc.Header} (Owner)");
+                    Console.WriteLine($"- {doc.Header.GetHeader()} (Owner)");
                 }
                 else if (doc.Collaborators.Contains(user))
                 {
-                    Console.WriteLine($"- {doc.Header} (Collaborator)");
+                    Console.WriteLine($"- {doc.Header.GetHeader()} (Collaborator)");
                 }
                 else if (doc.Approver == user)
                 {
-                    Console.WriteLine($"- {doc.Header} (Approver)");
+                    Console.WriteLine($"- {doc.Header.GetHeader()} (Approver)");
                 }
             }
         }
@@ -260,11 +251,9 @@ namespace DocumentWorkflowSystem
             Console.Write("Enter document footer: ");
             string footer = Console.ReadLine();
 
-            var document = new Document(factory, user)
-            {
-                Header = header,
-                Footer = footer
-            };
+            var document = new Document(factory, user);
+            document.Header.SetHeader(header);
+            document.Footer.SetFooter(footer);
 
             documentCollection.AddDocument(document);
             Console.WriteLine($"Document '{header}' created successfully.");
@@ -275,7 +264,7 @@ namespace DocumentWorkflowSystem
             string documentName = Console.ReadLine();
 
             var iterator = documentCollection.CreateIterator(doc =>
-                    doc.Header.Equals(documentName, StringComparison.OrdinalIgnoreCase));
+                    doc.Header.GetHeader().Equals(documentName, StringComparison.OrdinalIgnoreCase));
 
             Document document = null;
             if (iterator.HasNext())
@@ -574,11 +563,13 @@ namespace DocumentWorkflowSystem
         private static void ShowDocumentContents(Document document)
         {
             Console.WriteLine("\nDocument Contents:");
-            Console.WriteLine($"Header: {document.Header}");
-            Console.WriteLine($"Content: {document.Content}");
-            Console.WriteLine($"Footer: {document.Footer}");
+            Console.WriteLine($"Header: {document.Header.GetHeader()}");  
+            Console.WriteLine($"Content: {document.Content.GetContent()}");  
+            Console.WriteLine($"Additional Component: {document.AdditionalComponent.GetAdditionalComponent()}");  // ✅ FIXED
+            Console.WriteLine($"Footer: {document.Footer.GetFooter()}"); 
             Console.WriteLine($"State: {document.State.GetType().Name}");
             Console.WriteLine($"Owner: {document.Owner.Username}");
         }
+
     }
 }

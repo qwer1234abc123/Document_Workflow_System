@@ -8,19 +8,9 @@ namespace Document_Workflow_System
 {
     public class TechnicalReportFactory : IDocumentFactory
     {
-        public string CreateHeader()
-        {
-            return "Technical Report Header: Confidential";
-        }
-
-        public string CreateFooter()
-        {
-            return "Technical Report Footer: Prepared by TechCorp";
-        }
-
-        public string CreateContent()
-        {
-            return "Technical Report Content: Detailed technical analysis goes here.";
-        }
+        public IHeader CreateHeader() => new TechnicalReportHeader();
+        public IFooter CreateFooter() => new TechnicalReportFooter();
+        public IContent CreateContent() => new TechnicalReportContent();
+        public IAdditionalComponent CreateAdditionalComponent() => new TechnicalReportAppendix();
     }
 }
