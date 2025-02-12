@@ -331,6 +331,13 @@ namespace DocumentWorkflowSystem
                     break;
 
                 case "Submit for Review":
+                    // check if document has approver
+                    if (document.Approver != null)
+                    {
+                        document.SubmitForApproval(document.Approver);
+                        break;
+                    }
+                    // 
                     Console.Write("Enter approver's username: ");
                     string approverName = Console.ReadLine();
                     var approver = users.Find(u => u.Username.Equals(approverName, StringComparison.OrdinalIgnoreCase));
