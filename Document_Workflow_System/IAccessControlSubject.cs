@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Document_Workflow_System
 {
-    public interface IAccessControl
+    public interface IAccessControlSubject
     {
         bool CanAddCollaborator(User user, List<User> collaborators, User owner, User approver, string state);
         bool CanBeApprover(User user, List<User> collaborators, User owner);

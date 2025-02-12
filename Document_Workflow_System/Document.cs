@@ -20,7 +20,7 @@ namespace Document_Workflow_System
         public DateTime? LastEditedDate { get; set; }
         private List<INotifiable> observers;
         private IConversionStrategy conversionStrategy;
-        private readonly IAccessControl accessControlProxy;
+        private readonly IAccessControlSubject accessControlProxy;
 
         public Document(IDocumentFactory factory, User owner)
         {
@@ -34,7 +34,7 @@ namespace Document_Workflow_System
             State = new DraftState();
             CreatedDate = DateTime.Now;
 
-            accessControlProxy = new ProxyAccessControl(); // Initialize facade
+            accessControlProxy = new AccessControlProxy(); // Initialize facade
             RegisterObserver(owner);
         }
 

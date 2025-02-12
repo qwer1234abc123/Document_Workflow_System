@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace Document_Workflow_System
 {
-    public class ProxyAccessControl : IAccessControl
+    public class AccessControlProxy : IAccessControlSubject
     {
-        private readonly RealAccessControl _realAccessControl;
+        private readonly AccessControlRealSubject _realAccessControl;
         private readonly Dictionary<string, bool> _cache = new Dictionary<string, bool>(); // Caching results
 
-        public ProxyAccessControl()
+        public AccessControlProxy()
         {
-            _realAccessControl = new RealAccessControl();
+            _realAccessControl = new AccessControlRealSubject();
         }
 
         public bool CanAddCollaborator(User user, List<User> collaborators, User owner, User approver, string state)
