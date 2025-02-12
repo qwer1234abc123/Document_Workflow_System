@@ -10,7 +10,7 @@ namespace Document_Workflow_System
     {
         public string Convert(Document document)
         {
-            return $"PDF Document:\nHeader: {document.Header}\nContent: {document.Content}\nFooter: {document.Footer}";
+            return $"PDF Document:\nHeader: {document.Header.GetHeader()}\nContent: {document.Content.GetContent()}\nFooter: {document.Footer.GetFooter()}";
         }
     }
 }

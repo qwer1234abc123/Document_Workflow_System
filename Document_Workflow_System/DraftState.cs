@@ -32,22 +32,22 @@ namespace Document_Workflow_System
 			if (document.Approver != null)
             {
 				Console.WriteLine($"Document submitted for approval to {approver.Username}. State changed to 'Under Review'.");
-				document.NotifyObservers($"Document '{document.Header}' was submitted for approval by {document.Owner.Username} to {approver.Username}.");
+				document.NotifyObservers($"Document '{document.Header.GetHeader()}' was submitted for approval by {document.Owner.Username} to {approver.Username}.");
 			}
             else
             {
 				document.SetApprover(approver);
 
 				Console.WriteLine($"Document submitted for approval to {approver.Username}. State changed to 'Under Review'.");
-				document.NotifyObservers($"Document '{document.Header}' was submitted for approval by {document.Owner.Username} to {approver.Username}.");
-				approver.Notify($"You have been assigned as the approver for the document '{document.Header}'.");
+				document.NotifyObservers($"Document '{document.Header.GetHeader()}' was submitted for approval by {document.Owner.Username} to {approver.Username}.");
+				approver.Notify($"You have been assigned as the approver for the document '{document.Header.GetHeader()}'.");
 			}
             //document.SetApprover(approver);
             document.State = new UnderReviewState();
 
             /*Console.WriteLine($"Document submitted for approval to {approver.Username}. State changed to 'Under Review'.");
-            document.NotifyObservers($"Document '{document.Header}' was submitted for approval by {document.Owner.Username} to {approver.Username}.");
-            approver.Notify($"You have been assigned as the approver for the document '{document.Header}'.");*/
+            document.NotifyObservers($"Document '{document.Header.GetHeader()}' was submitted for approval by {document.Owner.Username} to {approver.Username}.");
+            approver.Notify($"You have been assigned as the approver for the document '{document.Header.GetHeader()}'.");*/
         }
 
 

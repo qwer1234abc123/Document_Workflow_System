@@ -51,7 +51,7 @@ namespace Document_Workflow_System
 
             // Retain the current approver
             Console.WriteLine($"Document pushed back with reason: {reason}. State changed to 'Draft'.");
-            document.NotifyObservers($"Document '{document.Header}' was pushed back by {approver.Username} with reason: {reason}.");
+            document.NotifyObservers($"Document '{document.Header.GetHeader()}' was pushed back by {approver.Username} with reason: {reason}.");
         }
 
         public List<string> GetValidActions(Document document, User user)

@@ -33,8 +33,8 @@ namespace Document_Workflow_System
             document.State = new UnderReviewState();
 
             Console.WriteLine($"Document resubmitted for approval to {approver.Username}. State changed to 'Under Review'.");
-            document.NotifyObservers($"Document '{document.Header}' was resubmitted for approval by {document.Owner.Username} to {approver.Username}.");
-            approver.Notify($"You have been assigned as the approver for the document '{document.Header}'.");
+            document.NotifyObservers($"Document '{document.Header.GetHeader()}' was resubmitted for approval by {document.Owner.Username} to {approver.Username}.");
+            approver.Notify($"You have been assigned as the approver for the document '{document.Header.GetHeader()}'.");
         }
 
 
