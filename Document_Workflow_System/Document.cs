@@ -20,7 +20,7 @@ namespace Document_Workflow_System
         public DateTime? LastEditedDate { get; private set; }
         private List<INotifiable> observers;
         private IConversionStrategy conversionStrategy;
-        private readonly AccessControlFacade accessControlFacade;
+        private readonly IAccessControl accessControlProxy;
 
         public Document(IDocumentFactory factory, User owner)
         {
@@ -34,19 +34,19 @@ namespace Document_Workflow_System
             State = new DraftState();
             CreatedDate = DateTime.Now;
 
-            accessControlFacade = new AccessControlFacade(); // Initialize facade
+            accessControlProxy = new ProxyAccessControl(); // Initialize facade
             RegisterObserver(owner);
         }
 
         public bool CanBeApprover(User user)
         {
-            return accessControlFacade.CanBeApprover(user, Collaborators, Owner);
+            return accessControlProxy.CanBeApprover(user, Collaborators, Owner);
 
         }
 
         public void AddCollaborator(User user)
         {
-            if (!accessControlFacade.CanAddCollaborator(user, Collaborators, Owner, Approver))
+            if (!accessControlProxy.CanAddCollaborator(user, Collaborators, Owner, Approver))
             {
                 Console.WriteLine($"Error: User '{user.Username}' cannot be added as a collaborator to this document.");
                 return; // Gracefully exit
@@ -61,19 +61,18 @@ namespace Document_Workflow_System
 
         public bool CanAddCollaborator(User user)
         {
-            return accessControlFacade.CanAddCollaborator(user, Collaborators, Owner, Approver);
+            return accessControlProxy.CanAddCollaborator(user, Collaborators, Owner, Approver);
         }
 
         public bool CanAccess(User user)
         {
-            return accessControlFacade.CanAccessDocument(user, Owner, Collaborators, Approver, State.GetType().Name);
+            return accessControlProxy.CanAccessDocument(user, Owner, Collaborators, Approver, State.GetType().Name);
         }
-
 
 
         public void Edit(string content, User user)
         {
-            if (!accessControlFacade.CanEditDocument(user, Owner, Collaborators, State.GetType().Name))
+            if (!accessControlProxy.CanEditDocument(user, Owner, Collaborators, State.GetType().Name))
             {
                 throw new UnauthorizedAccessException("User is not authorized to edit this document.");
             }
@@ -116,7 +115,6 @@ namespace Document_Workflow_System
             NotifyObservers($"Document '{Header.GetHeader()}' was rejected by {approver.Username} with reason: {reason}.");
         }
 
-
         public void UpdateContent(string content)
         {
             Content.SetContent(content);
@@ -156,7 +154,6 @@ namespace Document_Workflow_System
                 observers.Add(observer);
             }
         }
-
         public void RemoveObserver(INotifiable observer)
         {
             observers.Remove(observer);
