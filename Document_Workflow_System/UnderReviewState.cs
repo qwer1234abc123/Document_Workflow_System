@@ -46,11 +46,11 @@ namespace Document_Workflow_System
                 throw new UnauthorizedAccessException("Only the assigned approver can push back this document.");
             }
 
-            // Transition to PushedBackState
-            document.State = new PushedBackState();
+            // Transition to DraftState
+            document.State = new DraftState();
 
             // Retain the current approver
-            Console.WriteLine($"Document pushed back with reason: {reason}. State changed to 'Pushed Back'.");
+            Console.WriteLine($"Document pushed back with reason: {reason}. State changed to 'Draft'.");
             document.NotifyObservers($"Document '{document.Header}' was pushed back by {approver.Username} with reason: {reason}.");
         }
 
