@@ -8,7 +8,11 @@ namespace Document_Workflow_System
 {
     public interface IFooter
     {
+        // Retrieves the current footer content.
         string GetFooter();
-        void SetFooter(string footerText); 
+
+        // Updates the footer content with a new value.
+        void SetFooter(string footerText);
     }
+
 }

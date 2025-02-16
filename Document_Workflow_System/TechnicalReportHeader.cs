@@ -8,19 +8,23 @@ namespace Document_Workflow_System
 {
     public class TechnicalReportHeader : IHeader
     {
-        private string headerText;
+        private string headerText; // Stores the header content for the technical report.
 
+        // Constructor initializes the default header text.
         public TechnicalReportHeader()
         {
             headerText = "Technical Report Header: Confidential";
         }
 
+        // Retrieves the current header text.
         public string GetHeader() => headerText;
 
-        public void SetHeader(string newHeader) 
+        // Updates the header text with new content.
+        public void SetHeader(string newHeader)
         {
             headerText = newHeader;
         }
     }
+
 
 }

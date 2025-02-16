@@ -8,6 +8,8 @@ namespace Document_Workflow_System
 {
     public interface INotifiable
     {
+        // Sends a notification message to the implementing entity.
         void Notify(string message);
     }
+
 }

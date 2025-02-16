@@ -53,7 +53,7 @@ namespace DocumentWorkflowSystem
             while (iterator.HasNext())
             {
                 var doc = iterator.Next();
-                Console.WriteLine($"- {doc.Header.GetHeader()} (Owner: {doc.Owner.Username})");  // ✅ CORRECT
+                Console.WriteLine($"- {doc.Header.GetHeader()} (Owner: {doc.Owner.Username})"); 
             }
         }
 

@@ -8,9 +8,13 @@ namespace Document_Workflow_System
 {
     public interface IContent
     {
+        // Retrieves the content of the document
         string GetContent();
+
+        // Updates the content of the document with new text
         void SetContent(string newContent);
     }
+
 
 }
 

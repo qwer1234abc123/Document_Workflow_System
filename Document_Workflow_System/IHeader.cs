@@ -8,7 +8,11 @@ namespace Document_Workflow_System
 {
     public interface IHeader
     {
+        // Retrieves the current header content.
         string GetHeader();
-        void SetHeader(string headerText);  
+
+        // Updates the header content with a new value.
+        void SetHeader(string headerText);
     }
+
 }

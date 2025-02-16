@@ -8,6 +8,8 @@ namespace Document_Workflow_System
 {
     public interface IAdditionalComponent
     {
+        // Retrieves the additional component details specific to the document type
         string GetAdditionalComponent();
     }
+
 }
