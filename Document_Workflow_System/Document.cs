@@ -52,6 +52,14 @@ namespace Document_Workflow_System
         // Adds a collaborator to the document
         public void AddCollaborator(User user)
         {
+            // Check if the user is already in the collaborators list before proceeding
+            if (Collaborators.Contains(user))
+            {
+                Console.WriteLine($"Error: User '{user.Username}' is already a collaborator.");
+                return;
+            }
+
+            // Check if the user can be added as a collaborator
             if (!accessControlProxy.CanAddCollaborator(user, Collaborators, Owner, Approver, State.GetType().Name))
             {
                 Console.WriteLine($"Error: User '{user.Username}' cannot be added as a collaborator.");
@@ -62,6 +70,7 @@ namespace Document_Workflow_System
             RegisterObserver(user); // Add the user as an observer for notifications
             NotifyObservers($"User {user.Username} added as a collaborator to '{Header.GetHeader()}'.");
         }
+
 
         // Checks if a user has access to the document
         public bool CanAccess(User user)

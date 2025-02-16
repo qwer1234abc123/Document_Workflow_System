@@ -8,86 +8,67 @@ namespace Document_Workflow_System
 {
     public class AccessControlProxy : IAccessControlSubject
     {
-        // The real access control subject that handles actual permission checks
         private readonly AccessControlRealSubject _realAccessControl;
-
-        // A cache to store access control decisions, reducing redundant checks
-        private readonly Dictionary<string, bool> _cache = new Dictionary<string, bool>();
+        private readonly Dictionary<string, DateTime> _requestTimestamps; // Rate-limit tracking
 
         public AccessControlProxy()
         {
             _realAccessControl = new AccessControlRealSubject();
+            _requestTimestamps = new Dictionary<string, DateTime>();
         }
 
-        // Checks if a user can be added as a collaborator, caching results for efficiency
+        // **Helper method: Rate Limiting**
+        private bool IsRateLimited(string key)
+        {
+            if (_requestTimestamps.ContainsKey(key) &&
+                (DateTime.Now - _requestTimestamps[key]).TotalSeconds < 5)
+            {
+                Console.WriteLine($"Rate Limit Exceeded: Too many requests for {key}. Try again later.");
+                return true;
+            }
+
+            _requestTimestamps[key] = DateTime.Now; // Update last request time
+            return false;
+        }
+
         public bool CanAddCollaborator(User user, List<User> collaborators, User owner, User approver, string state)
         {
-            string key = $"AddCollab-{user.Username}-{owner.Username}";
+            string key = $"AddCollab-{user.Username}";
+            if (IsRateLimited(key)) return false;
 
-            // If the result is not in the cache, compute and store it
-            if (!_cache.ContainsKey(key))
-            {
-                _cache[key] = _realAccessControl.CanAddCollaborator(user, collaborators, owner, approver, state);
-            }
-
-            return _cache[key];
+            return _realAccessControl.CanAddCollaborator(user, collaborators, owner, approver, state);
         }
 
-        // Determines if a user can be assigned as an approver for a document
         public bool CanBeApprover(User user, List<User> collaborators, User owner)
         {
-            string key = $"BeApprover-{user.Username}-{owner.Username}";
+            string key = $"BeApprover-{user.Username}";
+            if (IsRateLimited(key)) return false;
 
-            // If the result is not cached, retrieve and store it
-            if (!_cache.ContainsKey(key))
-            {
-                _cache[key] = _realAccessControl.CanBeApprover(user, collaborators, owner);
-            }
-
-            return _cache[key];
+            return _realAccessControl.CanBeApprover(user, collaborators, owner);
         }
 
-        // Checks if a document can be submitted for approval by a given approver
         public bool CanSubmitForApproval(Document document, User approver)
         {
-            string key = $"Submit-{document.Header}-{approver.Username}";
+            string key = $"SubmitApproval-{approver.Username}";
+            if (IsRateLimited(key)) return false;
 
-            // If not cached, retrieve and store the result
-            if (!_cache.ContainsKey(key))
-            {
-                _cache[key] = _realAccessControl.CanSubmitForApproval(document, approver);
-            }
-
-            return _cache[key];
+            return _realAccessControl.CanSubmitForApproval(document, approver);
         }
 
-        // Determines whether a user can edit the document in its current state
         public bool CanEditDocument(User user, User owner, List<User> collaborators, string state)
         {
-            string key = $"Edit-{user.Username}-{state}";
+            string key = $"EditDoc-{user.Username}";
+            if (IsRateLimited(key)) return false;
 
-            // If the edit permission is not cached, check and store it
-            if (!_cache.ContainsKey(key))
-            {
-                _cache[key] = _realAccessControl.CanEditDocument(user, owner, collaborators, state);
-            }
-
-            return _cache[key];
+            return _realAccessControl.CanEditDocument(user, owner, collaborators, state);
         }
 
-        // Checks if a user has access to a document based on ownership, collaboration, or approval role
         public bool CanAccessDocument(User user, User owner, List<User> collaborators, User approver, string state)
         {
-            string key = $"Access-{user.Username}-{state}";
+            string key = $"AccessDoc-{user.Username}";
+            if (IsRateLimited(key)) return false;
 
-            // If the access check result is not cached, retrieve and store it
-            if (!_cache.ContainsKey(key))
-            {
-                _cache[key] = _realAccessControl.CanAccessDocument(user, owner, collaborators, approver, state);
-            }
-
-            return _cache[key];
+            return _realAccessControl.CanAccessDocument(user, owner, collaborators, approver, state);
         }
     }
-
 }

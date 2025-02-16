@@ -309,7 +309,7 @@ namespace DocumentWorkflowSystem
         {
             if (!document.CanAccess(user))
             {
-                Console.WriteLine("You no longer have access to this document.");
+                Console.WriteLine("You have no access to this document.");
                 return;
             }
             while (true)
