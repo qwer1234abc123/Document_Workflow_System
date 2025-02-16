@@ -37,7 +37,7 @@ namespace Document_Workflow_System
             }
 
             document.State = new RejectedState();
-            document.LastEditedDate = null; // ✅ Reset last edited date to force editing before resubmission
+            document.LastEditedDate = null; 
 
             Console.WriteLine($"Document rejected with reason: {reason}. State changed to 'Rejected'.");
             document.NotifyObservers($"Document '{document.Header.GetHeader()}' was rejected by {approver.Username} with reason: {reason}.");

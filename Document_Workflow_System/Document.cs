@@ -34,7 +34,7 @@ namespace Document_Workflow_System
             State = new DraftState();
             CreatedDate = DateTime.Now;
 
-            accessControlProxy = new AccessControlProxy(); // Initialize facade
+            accessControlProxy = new AccessControlProxy();
             RegisterObserver(owner);
         }
 
@@ -78,13 +78,6 @@ namespace Document_Workflow_System
 
         public void SubmitForApproval(User approver = null)
         {
-            // Ensure that rejected documents are edited before re-submission
-            if (State is RejectedState && (LastEditedDate == null || LastEditedDate < CreatedDate))
-            {
-                Console.WriteLine("Error: Document must be edited before resubmitting for approval.");
-                return;
-            }
-
             try
             {
                 State.Submit(this, approver);
@@ -95,12 +88,10 @@ namespace Document_Workflow_System
             }
         }
 
-
         public void Approve(User approver)
         {
             State.Approve(this, approver);
             NotifyObservers($"Document '{Header.GetHeader()}' was approved by {approver.Username}.");
-            approver.Notify($"You approved the document '{Header.GetHeader()}'.");
         }
 
         public void Reject(string reason, User approver)

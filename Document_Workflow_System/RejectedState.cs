@@ -14,6 +14,7 @@ namespace Document_Workflow_System
             {
                 document.UpdateContent(content);
                 document.UpdateLastEditedDate(DateTime.Now);
+                document.State = new DraftState();
                 Console.WriteLine("Document edited in Rejected state.");
             }
             else
@@ -24,19 +25,8 @@ namespace Document_Workflow_System
 
         public void Submit(Document document, User approver)
         {
-            if (!document.CanBeApprover(approver))
-            {
-                throw new InvalidOperationException($"User '{approver.Username}' cannot be an approver for this document.");
-            }
-
-            document.SetApprover(approver);
-            document.State = new UnderReviewState();
-
-            Console.WriteLine($"Document resubmitted for approval to {approver.Username}. State changed to 'Under Review'.");
-            document.NotifyObservers($"Document '{document.Header.GetHeader()}' was resubmitted for approval by {document.Owner.Username} to {approver.Username}.");
-            approver.Notify($"You have been assigned as the approver for the document '{document.Header.GetHeader()}'.");
+            throw new InvalidOperationException("Error: Document must be edited before resubmitting for approval.");
         }
-
 
         public void Approve(Document document, User approver)
         {

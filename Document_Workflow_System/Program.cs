@@ -22,9 +22,10 @@ namespace DocumentWorkflowSystem
             Console.WriteLine("=== Initializing System ===");
 
             // Create users
-            var john = new User("John", UserRole.Owner);
-            var mary = new User("Mary", UserRole.Owner);
-            var steve = new User("Steve", UserRole.Owner);
+            var john = new User("John");
+            var mary = new User("Mary");
+            var steve = new User("Steve");
+
             users.Add(john);
             users.Add(mary);
             users.Add(steve);
@@ -45,7 +46,7 @@ namespace DocumentWorkflowSystem
 
             documentCollection.AddDocument(grantProposal2);
 
-            // Print initialized documents
+            // Display initialized documents
             Console.WriteLine("\nInitialized Documents:");
             var iterator = documentCollection.CreateIterator();
 
@@ -97,19 +98,22 @@ namespace DocumentWorkflowSystem
             Console.Write("Enter new user's name: ");
             string name = Console.ReadLine();
 
+            // Validate user input
             if (string.IsNullOrWhiteSpace(name))
             {
                 Console.WriteLine("Invalid name. Please try again.");
                 return;
             }
 
+            // Ensure username uniqueness
             if (users.Exists(u => u.Username.Equals(name, StringComparison.OrdinalIgnoreCase)))
             {
                 Console.WriteLine("User already exists. Please choose a different name.");
                 return;
             }
 
-            users.Add(new User(name, UserRole.Owner));
+            // Create new user
+            users.Add(new User(name));
             Console.WriteLine($"User '{name}' created successfully.");
         }
 
@@ -118,6 +122,7 @@ namespace DocumentWorkflowSystem
             Console.Write("Enter your username to login: ");
             string username = Console.ReadLine();
 
+            // Find the user
             var user = users.Find(u => u.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
             if (user == null)
             {
@@ -135,6 +140,8 @@ namespace DocumentWorkflowSystem
             foreach (var user in users)
             {
                 Console.Write($"- {user.Username} ");
+
+                // Retrieve documents where the user is either an owner or a collaborator
                 var iterator = documentCollection.CreateIterator(doc =>
                     doc.Owner == user || doc.Collaborators.Contains(user));
 
@@ -147,6 +154,7 @@ namespace DocumentWorkflowSystem
 
                 if (userDocs.Count > 0)
                 {
+                    // Display user's associated documents
                     Console.Write("(" + string.Join(", ", userDocs) + ")");
                 }
                 else
@@ -232,6 +240,7 @@ namespace DocumentWorkflowSystem
             Console.Write("Enter document type (1 for Technical Report, 2 for Grant Proposal): ");
             string type = Console.ReadLine();
 
+            // Assign the appropriate document factory
             IDocumentFactory factory = type switch
             {
                 "1" => new TechnicalReportFactory(),
@@ -248,9 +257,22 @@ namespace DocumentWorkflowSystem
             Console.Write("Enter document header: ");
             string header = Console.ReadLine();
 
+            // Ensure the document header is unique
+            var iterator = documentCollection.CreateIterator();
+            while (iterator.HasNext())
+            {
+                var existingDocument = iterator.Next();
+                if (existingDocument.Header.GetHeader().Equals(header, StringComparison.OrdinalIgnoreCase))
+                {
+                    Console.WriteLine($"Error: A document with the header '{header}' already exists. Please choose a unique header.");
+                    return;
+                }
+            }
+
             Console.Write("Enter document footer: ");
             string footer = Console.ReadLine();
 
+            // Create and add the new document
             var document = new Document(factory, user);
             document.Header.SetHeader(header);
             document.Footer.SetFooter(footer);
@@ -258,11 +280,13 @@ namespace DocumentWorkflowSystem
             documentCollection.AddDocument(document);
             Console.WriteLine($"Document '{header}' created successfully.");
         }
+
         private static void EditExistingDocument(User user)
         {
             Console.Write("\nEnter the name of the document to edit: ");
             string documentName = Console.ReadLine();
 
+            // Find the document by its header
             var iterator = documentCollection.CreateIterator(doc =>
                     doc.Header.GetHeader().Equals(documentName, StringComparison.OrdinalIgnoreCase));
 
